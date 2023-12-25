@@ -1,0 +1,87 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-col style="display: flex; justify-content: space-between;">
+        <c-card-header>Hastalar</c-card-header>
+        <button cButton color="info" (click)="toggleLiveDemo()">Hasta Ekle</button>
+      </c-col>
+
+      <c-card-body>
+        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+          <thead cTableColor="light">
+            <tr>
+              <th class="text-center">
+                <svg cIcon name="cilPeople"></svg>
+              </th>
+              <th>Hasta Adı Soyadı</th>
+              <th>Hasta TC Kimlik No</th>
+              <th>Hasta Telefon No</th>
+              <th class="text-center">Payment Method</th>
+              <th>Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users; index as i">
+              <td class="text-center">
+                <c-avatar size="md"
+                  src="https://cdn.icon-icons.com/icons2/2388/PNG/512/profession_job_occupation_healthcare_avatar_medical_woman_people_icon_144685.png"></c-avatar>
+              </td>
+              <td>
+                <div>{{ user.name }}</div>
+              </td>
+              <td>
+                <div>{{ user.name }}</div>
+              </td>
+              <td>
+                <div>{{ user.name }}</div>
+              </td>
+              <td class="text-center">
+                <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
+              </td>
+              <td>
+                <div class="small text-medium-emphasis">Last login</div>
+                <div class="fw-semibold text-nowrap">{{ user.activity }}</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>Hasta Ekle</h5>
+    <button (click)="toggleLiveDemo()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <form cForm>
+      <div class="mb-3">
+        <label cLabel for="exampleFormControlInput1">Hasta Adı</label>
+        <input cFormControl id="exampleFormControlInput1" placeholder="Hasta Adı" type="text" />
+      </div>
+      <div class="mb-3">
+        <label cLabel for="exampleFormControlInput1">Hasta Soyadı</label>
+        <input cFormControl id="exampleFormControlInput1" placeholder="Hasta Soyadı" type="text" />
+      </div>
+      <div class="mb-3">
+        <label cLabel for="exampleFormControlInput1">Hasta Telefon No</label>
+        <input cFormControl id="exampleFormControlInput1" placeholder="Hasta Telefon No" type="number" />
+      </div>
+      <div class="mb-3">
+        <label cLabel for="exampleFormControlInput1">Göz Resmi Ekle</label>
+        <input cFormControl id="exampleFormControlInput1" placeholder="Resim" type="file" />
+      </div>
+      <div class="mb-3">
+        <label cLabel for="exampleFormControlInput1">Doktor Açıklaması</label>
+        <textarea cFormControl id="exampleFormControlTextarea1" rows="3"></textarea>
+      </div>
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleLiveDemo()" cButton color="secondary">
+      Close
+    </button>
+    <button cButton color="primary">Save changes</button>
+  </c-modal-footer>
+</c-modal>
