@@ -1,13 +1,22 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
-      <c-col style="display: flex; justify-content: space-between;">
+      <c-col style="display: flex; justify-content: space-between">
         <c-card-header>Hastalar</c-card-header>
-        <button cButton color="info" (click)="toggleLiveDemo()">Hasta Ekle</button>
+        <button cButton color="info" (click)="toggleLiveDemo()">
+          Hasta Ekle
+        </button>
       </c-col>
 
       <c-card-body>
-        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+        <table
+          [hover]="true"
+          [responsive]="true"
+          [striped]="true"
+          align="middle"
+          cTable
+          class="mb-0 border"
+        >
           <thead cTableColor="light">
             <tr>
               <th class="text-center">
@@ -16,31 +25,50 @@
               <th>Hasta Adı Soyadı</th>
               <th>Hasta TC Kimlik No</th>
               <th>Hasta Telefon No</th>
-              <th class="text-center">Payment Method</th>
-              <th>Activity</th>
+              <th class="text-center">Doktor Açıklaması</th>
+              <th>Sonuç</th>
+
+              <th>Rapor Oluşturma Tarihi</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let user of users; index as i">
               <td class="text-center">
-                <c-avatar size="md"
-                  src="https://cdn.icon-icons.com/icons2/2388/PNG/512/profession_job_occupation_healthcare_avatar_medical_woman_people_icon_144685.png"></c-avatar>
+                <c-avatar
+                  size="md"
+                  src="https://cdn.icon-icons.com/icons2/2388/PNG/512/profession_job_occupation_healthcare_avatar_medical_woman_people_icon_144685.png"
+                ></c-avatar>
               </td>
               <td>
-                <div>{{ user.name }}</div>
+                <div>{{ user.name }} {{ user.surname }}</div>
               </td>
               <td>
-                <div>{{ user.name }}</div>
+                <div>{{ user.identificationNo }}</div>
               </td>
               <td>
-                <div>{{ user.name }}</div>
-              </td>
-              <td class="text-center">
-                <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
+                <div>{{ user.phone }}</div>
               </td>
               <td>
-                <div class="small text-medium-emphasis">Last login</div>
-                <div class="fw-semibold text-nowrap">{{ user.activity }}</div>
+                <div [title]="user.description">
+                  {{
+                    user.description.length > 15
+                      ? (user.description | slice : 0 : 15) + "..."
+                      : user.description
+                  }}
+                </div>
+              </td>
+              <td>
+                <div [ngStyle]="{ color: getColor(user.result) }">
+                  {{ user.result }}
+                </div>
+              </td>
+              <td>
+                <div class="small text-medium-emphasis">
+                  Rapor Oluşturma Tarihi
+                </div>
+                <div class="fw-semibold text-nowrap">
+                  {{ user.createDate?.toDate() | date : "medium" }}
+                </div>
               </td>
             </tr>
           </tbody>
@@ -49,39 +77,126 @@
     </c-card>
   </c-col>
 </c-row>
-<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+<c-modal
+  id="liveDemoModal"
+  [visible]="visible"
+  (visibleChange)="handleLiveDemoChange($event)"
+>
   <c-modal-header>
     <h5 cModalTitle>Hasta Ekle</h5>
     <button (click)="toggleLiveDemo()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
-    <form cForm>
+    <form cForm [formGroup]="patients">
       <div class="mb-3">
-        <label cLabel for="exampleFormControlInput1">Hasta Adı</label>
-        <input cFormControl id="exampleFormControlInput1" placeholder="Hasta Adı" type="text" />
+        <label cLabel for="exampleFormControlInput1">Hasta Adı*</label>
+        <input
+          cFormControl
+          id="exampleFormControlInput1"
+          placeholder="Hasta Adı"
+          type="text"
+          [formControl]="patients.controls.name"
+        />
+        <span
+          class="text-danger"
+          style="font-size: 12px"
+          *ngIf="(patients.controls.name.touched || submited) && patients.controls.name.errors?.['required']"
+        >
+          Hasta adı zorunlu!
+        </span>
       </div>
       <div class="mb-3">
-        <label cLabel for="exampleFormControlInput1">Hasta Soyadı</label>
-        <input cFormControl id="exampleFormControlInput1" placeholder="Hasta Soyadı" type="text" />
+        <label cLabel for="exampleFormControlInput1">Hasta Soyadı*</label>
+        <input
+          cFormControl
+          id="exampleFormControlInput1"
+          placeholder="Hasta Soyadı"
+          type="text"
+          [formControl]="patients.controls.surname"
+        />
+        <span
+          class="text-danger"
+          style="font-size: 12px"
+          *ngIf="(patients.controls.surname.touched || submited) && patients.controls.surname.errors?.['required']"
+        >
+          Hasta soyadı zorunlu!
+        </span>
       </div>
       <div class="mb-3">
-        <label cLabel for="exampleFormControlInput1">Hasta Telefon No</label>
-        <input cFormControl id="exampleFormControlInput1" placeholder="Hasta Telefon No" type="number" />
+        <label cLabel for="exampleFormControlInput1">Hasta Telefon No*</label>
+        <input
+          cFormControl
+          id="exampleFormControlInput1"
+          placeholder="Hasta Telefon No"
+          type="number"
+          [formControl]="patients.controls.phone"
+        />
+        <span
+          class="text-danger"
+          style="font-size: 12px"
+          *ngIf="(patients.controls.phone.touched || submited) && patients.controls.phone.errors?.['required']"
+        >
+          Hasta telefon numarası zorunlu!
+        </span>
       </div>
       <div class="mb-3">
-        <label cLabel for="exampleFormControlInput1">Göz Resmi Ekle</label>
-        <input cFormControl id="exampleFormControlInput1" placeholder="Resim" type="file" />
+        <label cLabel for="exampleFormControlInput1">Hasta TC Kimlik No*</label>
+        <input
+          cFormControl
+          id="exampleFormControlInput1"
+          placeholder="Hasta TC Kimlik No"
+          type="number"
+          [formControl]="patients.controls.identificationNo"
+        />
+        <span
+          class="text-danger"
+          style="font-size: 12px"
+          *ngIf="(patients.controls.identificationNo.touched || submited) && patients.controls.identificationNo.errors?.['required']"
+        >
+          Hasta TC Kimlik No zorunlu!
+        </span>
+      </div>
+      <div class="mb-3">
+        <label cLabel for="exampleFormControlInput1">Göz Resmi Ekle*</label>
+        <input
+          cFormControl
+          id="exampleFormControlInput1"
+          placeholder="Resim"
+          type="file"
+          (change)="handleUpload($event)"
+        />
+        <div *ngIf="isUploadImage">
+          <c-progress class="my-2" thin>
+            <c-progress-bar
+              [value]="progressScore"
+              color="success"
+            ></c-progress-bar>
+          </c-progress>
+          <span>Sonuç Değeri : {{ patients.controls["result"].value }}</span>
+        </div>
+        <span
+          class="text-danger"
+          style="font-size: 12px"
+          *ngIf="(patients.controls.image.touched || submited) && patients.controls.image.errors?.['required']"
+        >
+          Hasta resmi zorunlu!
+        </span>
       </div>
       <div class="mb-3">
         <label cLabel for="exampleFormControlInput1">Doktor Açıklaması</label>
-        <textarea cFormControl id="exampleFormControlTextarea1" rows="3"></textarea>
+        <textarea
+          cFormControl
+          id="exampleFormControlTextarea1"
+          rows="3"
+          [formControl]="patients.controls.description"
+        ></textarea>
       </div>
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button (click)="toggleLiveDemo()" cButton color="secondary">
-      Close
+    <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
+    <button cButton color="primary" (click)="savePatients()">
+      Hasta kayıt
     </button>
-    <button cButton color="primary">Save changes</button>
   </c-modal-footer>
 </c-modal>
