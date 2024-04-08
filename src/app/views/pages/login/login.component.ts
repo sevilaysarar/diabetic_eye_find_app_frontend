@@ -20,7 +20,6 @@ export class LoginComponent implements OnInit {
     return this.authService.isAuthenticated;
   }
   ngOnInit(): void {
-    console.log('this.isAuthenticated;',this.isAuthenticated)
     if(this.isAuthenticated){
       this.router.navigate(['/dashboard'])
     }
