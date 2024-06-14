@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -34,6 +34,8 @@ export class DashboardComponent implements OnInit {
   submited = false;
   progressScore = 0;
   isUploadImage = false;
+  @ViewChild('fileInput') fileInput!: ElementRef ;
+
   patients = new FormGroup({
     name: new FormControl<string>('', [
       Validators.minLength(3),
@@ -83,6 +85,20 @@ export class DashboardComponent implements OnInit {
     }
   }
   toggleLiveDemo() {
+    this.patients.reset({
+      name: '',
+      surname: '',
+      phone: '',
+      identificationNo: '',
+      description: '',
+      image: '',
+      createDate: new Date(),
+      result: 0
+    });
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = ''; // Clear the file input
+    }
+    this.patients.clearValidators();
     this.visible = !this.visible;
   }
 
@@ -114,10 +130,47 @@ export class DashboardComponent implements OnInit {
     this.isUploadImage = true;
     const file: File = event.target.files[0];
     const reader = new FileReader();
+    
     reader.readAsDataURL(file);
     reader.onload = () => {
-      this.patients.controls['image'].setValue(reader.result);
-      this.fetch(file);
+      const img = new Image();
+      img.src = reader.result as string;
+  
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+  
+        if (ctx) {  // Check if ctx is not null
+          // Resize parameters
+          const MAX_WIDTH = 800; // max width for the resized image
+          const MAX_HEIGHT = 800; // max height for the resized image
+          let width = img.width;
+          let height = img.height;
+  
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+  
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+  
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // You can adjust the quality from 0 to 1
+  
+          this.patients.controls['image'].setValue(resizedDataUrl);
+          this.fetch(file);
+        } else {
+          console.error('2D context is not available.');
+        }
+      };
     };
   }
   fetch(file: File) {

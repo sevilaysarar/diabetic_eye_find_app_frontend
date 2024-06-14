@@ -157,10 +157,11 @@
         </span>
       </div>
       <div class="mb-3">
-        <label cLabel for="exampleFormControlInput1">Göz Resmi Ekle*</label>
+        <label cLabel for="fileInput">Göz Resmi Ekle*</label>
         <input
+        #fileInput
           cFormControl
-          id="exampleFormControlInput1"
+          id="fileInput"
           placeholder="Resim"
           type="file"
           (change)="handleUpload($event)"
